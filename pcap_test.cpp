@@ -55,4 +55,22 @@ void main()
 		printf("어댑터 설명 : %s\n", device->description);
 		count = count + 1;
 	}
+	//3. 네트워크 카드를 선택하고 선택된 디바이스로 수집할 패킷 결정하기
+	printf("패킷을 수집할 네트워크를 선택 하세요 : ");
+	device = allDevice;//카드를 선택하지 않고 그냥 첫 번째 카드로 설정했음.
+
+	int choice;
+	scanf_s("%d", &choice);
+	for (count = 0; count < choice; count++)
+	{
+		device = device->next;
+	}
+
+	//네트워크 장치를 열고, 수집할 패킷 양을 설정한다.
+	pickedDev = pcap_open_live(device->name, 65536, 0, 1000, errorMSG);
+	//랜카드의 이름, 수집할 패킷 크기(최대 65536), 프로미스큐어스모드(패킷 수집 모드) 설정, 패킷 대기 시간, 에러 정보를 저장할 공간)
+
+	//4. 랜카드 리스트 정보를 저장한 메모리를 비워준다.
+	pcap_freealldevs(allDevice);
+
 }
