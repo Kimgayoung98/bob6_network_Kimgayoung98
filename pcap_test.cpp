@@ -3,6 +3,7 @@
 #include <WinSock2.h>
 
 void packet_handler(u_char *param, const struct pcap_pkthdr *h, const u_char *data);
+//패킷을 무한 루프 상태에서 읽고 처리하는 함수
 
 typedef struct Ethernet_Header//이더넷 헤더 구조체
 {
@@ -57,6 +58,7 @@ void main()
 		printf("어댑터 설명 : %s\n", device->description);
 		count = count + 1;
 	}
+
 	//3. 네트워크 카드를 선택하고 선택된 디바이스로 수집할 패킷 결정하기
 	printf("패킷을 수집할 네트워크를 선택 하세요 : ");
 	device = allDevice;//카드를 선택하지 않고 그냥 첫 번째 카드로 설정했음.
@@ -91,6 +93,8 @@ void packet_handler(u_char *param, const struct pcap_pkthdr *h, const u_char *da
 	//EH->ptype은 빅 엔디언 형식을 취하므로,
 	//이를 리틀 엔디언 형식으로 변환(ntohs 함수)하여 type에 저장한다.
 	printf("다음 패킷 : %04x\n", EH->ptype);
+	//귀찮으면 그냥 네트워크로 부터 1바이트를 초과하는 데이터를
+	//수신 받을 때는  항상 리틀 엔디언 형식으로 변환 해 주어야 한다고 외우자.
 
 	printf("┌─────────────────────────\n");
 	printf("├Src MAC : %02x-%02x-%02x-%02x-%02x-%02x\n", EH->src[0], EH->src[1], EH->src[2], EH->src[3], EH->src[4], EH->src[5]);//송신자 MAC
@@ -108,3 +112,4 @@ void packet_handler(u_char *param, const struct pcap_pkthdr *h, const u_char *da
 	}
 }
 
+// last version
