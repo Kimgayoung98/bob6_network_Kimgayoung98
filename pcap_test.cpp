@@ -2,6 +2,8 @@
 #include "pcap.h"
 #include <WinSock2.h>
 
+void packet_handler(u_char *param, const struct pcap_pkthdr *h, const u_char *data);
+
 typedef struct Ethernet_Header//이더넷 헤더 구조체
 {
 	u_char des[6];//수신자 MAC 주소
@@ -73,4 +75,20 @@ void main()
 	//4. 랜카드 리스트 정보를 저장한 메모리를 비워준다.
 	pcap_freealldevs(allDevice);
 
+	//5. 설정한 네트워크 카드에서 패킷을 무한 캡쳐 할 함수를 만들고 캡쳐를 시작한다.
+	pcap_loop(pickedDev, 0, packet_handler, NULL);
+}
+
+//아래에서 사용할 수 있도록패킷 핸들러를 만든다.
+void packet_handler(u_char *param, const struct pcap_pkthdr *h, const u_char *data)
+//인자 = 파라미터, 패킷 헤더, 패킷 데이터(수신자 MAC 주소 부분 부터)
+{
+#define IPHEADER 0x0800
+	//소스 읽을 때 가독성을 위해 상수를 문자로 바꾼다.
+
+	Ethernet_Header *EH = (Ethernet_Header *)data;//data 주소에 저장된 14byte 데이터가 구조체 Ethernet_Header 형태로 EH에 저장된다.
+	short int type = ntohs(EH->ptype);
+	//EH->ptype은 빅 엔디언 형식을 취하므로,
+	//이를 리틀 엔디언 형식으로 변환(ntohs 함수)하여 type에 저장한다.
+	printf("다음 패킷 : %04x\n", EH->ptype);
 }
