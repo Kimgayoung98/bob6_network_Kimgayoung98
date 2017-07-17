@@ -33,5 +33,26 @@ typedef struct IPHeader
 
 void main()
 {
+	pcap_if_t *allDevice; //찾아낸 디바이스를 LinkedList로 묶고, 그 중 첫 번째 오브젝트를 담을 변수 생성
+	pcap_if_t *device; //Linked List의 다음 오브젝트를 담을 공간
+	char errorMSG[256]; //에러 메시지를 담을 변수 생성
+	char counter = 0;
 
+	pcap_t *pickedDev; //사용할 디바이스를 저장하는 변수
+
+					   //1. 장치 검색 (찾아낸 디바이스를 LinkedList로 묶음)
+	if ((pcap_findalldevs(&allDevice, errorMSG)) == -1)//변수 생성시에는 1 포인터지만, pcap_findallDevice에 쓰는건 더블 포인트이므로 주소로 주어야 함.
+	{											   //pcap_if_t는 int형태를 반환하며, -1이 나올 경우, 디바이스를 찾지 못했을 경우이다.
+		printf("장치 검색 오류");
+	}
+	//2. 장치 출력
+	int count = 0;
+	for (device = allDevice; device != NULL; device = device->next)
+		//dev에 allDevice의 첫 시작 주소를 넣으며, dev의 값이 NULL(끝)일 경우 종료, dev는 매 for마다 다음 주소값으로 전환
+	{
+		printf("%d 번 네트워크\n", count);
+		printf("어댑터 정보 : %s\n", device->name);
+		printf("어댑터 설명 : %s\n", device->description);
+		count = count + 1;
+	}
 }
