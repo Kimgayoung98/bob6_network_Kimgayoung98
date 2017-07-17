@@ -91,4 +91,20 @@ void packet_handler(u_char *param, const struct pcap_pkthdr *h, const u_char *da
 	//EH->ptype은 빅 엔디언 형식을 취하므로,
 	//이를 리틀 엔디언 형식으로 변환(ntohs 함수)하여 type에 저장한다.
 	printf("다음 패킷 : %04x\n", EH->ptype);
+
+	printf("┌─────────────────────────\n");
+	printf("├Src MAC : %02x-%02x-%02x-%02x-%02x-%02x\n", EH->src[0], EH->src[1], EH->src[2], EH->src[3], EH->src[4], EH->src[5]);//송신자 MAC
+	printf("├Dst MAC : %02x-%02x-%02x-%02x-%02x-%02x\n", EH->des[0], EH->des[1], EH->des[2], EH->des[3], EH->des[4], EH->des[5]);//수신자 MAC
+	IPHeader *IH = (struct IPHeader*)(data + 14); //제일 처음 14byte는 이더넷 헤더(Layer 2) 그 위에는 IP헤더(20byte), 그 위에는 TCP 헤더...
+
+	if (type == IPHEADER)
+	{
+		printf("버전 : %d\n", IH->Version);
+		printf("헤더 길이 : %d\n", (IH->HeaderLength) * 4);
+		printf("전체 크기 : %d\n", ntohs(IH->HeaderLength));//2 bytes 이상 부터는 무조건 뒤집어야 하므로 ntohs함수를 써서 뒤집는다.
+		printf("출발 IP 주소 : %d.%d.%d.%d\n", IH->SenderAddress.ip1, IH->SenderAddress.ip2, IH->SenderAddress.ip3, IH->SenderAddress.ip4);
+		printf("도착 IP 주소 : %d.%d.%d.%d\n", IH->DestinationAddress.ip1, IH->DestinationAddress.ip2, IH->DestinationAddress.ip3, IH->DestinationAddress.ip4);
+
+	}
 }
+
